@@ -1,5 +1,6 @@
 // IBookManager.aidl
 package com.lewish.start.ipcdemo;
+import com.lewish.start.ipcdemo.IOnNewBookArrivedListener;
 import com.lewish.start.ipcdemo.entity.Book;
 // Declare any non-default types here with import statements
 
@@ -10,4 +11,6 @@ interface IBookManager {
      */
     List<Book> getBookList();
     void addBook(in Book book);
+    void registerOnBookArrivedListener(IOnNewBookArrivedListener iListener);
+    void unRegisterOnBookArrivedListener(IOnNewBookArrivedListener iListener);
 }
