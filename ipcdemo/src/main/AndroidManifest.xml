@@ -18,9 +18,7 @@
 
         <service
             android:name=".service.BookManagerService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":bookManagerProcess"/>
+            android:process=":two"/>
 
         <activity android:name=".MainActivity"></activity>
     </application>

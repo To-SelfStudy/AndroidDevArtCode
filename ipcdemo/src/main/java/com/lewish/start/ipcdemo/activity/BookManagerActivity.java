@@ -39,7 +39,7 @@ public class BookManagerActivity extends AppCompatActivity {
                 return;
             bookManager.asBinder().unlinkToDeath(deathRecipient,0);
             bookManager = null;
-            // TODO: 这里重新绑定远程Service
+            //这里重新绑定远程Service
             Intent intent = new Intent(BookManagerActivity.this, BookManagerService.class);
             bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE);
         }
