@@ -32,18 +32,31 @@ public class BookManagerActivity extends AppCompatActivity {
             });
         }
     };
+    private IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
+        @Override
+        public void binderDied() {
+            if(bookManager==null)
+                return;
+            bookManager.asBinder().unlinkToDeath(deathRecipient,0);
+            bookManager = null;
+            // TODO: 这里重新绑定远程Service
+            Intent intent = new Intent(BookManagerActivity.this, BookManagerService.class);
+            bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+    };
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             bookManager = IBookManager.Stub.asInterface(iBinder);
-
             try {
+                iBinder.linkToDeath(deathRecipient,0);
                 bookManager.addBook(new Book(0,"语文"));
                 List<Book> bookList = bookManager.getBookList();
                 for (int i=0;i<bookList.size();i++){
                     Book book = bookList.get(i);
                     Log.d(TAG, "BookId="+book.bookId+",BookName="+book.bookName);
                 }
+                Log.d(TAG, "onServiceConnected: IOnNewBookArrivedListener="+iOnNewBookArrivedListener);
                 bookManager.registerOnBookArrivedListener(iOnNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -63,6 +76,7 @@ public class BookManagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_book_manager);
         Intent intent = new Intent(this, BookManagerService.class);
         bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override

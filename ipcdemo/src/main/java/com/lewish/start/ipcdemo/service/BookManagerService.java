@@ -78,7 +78,6 @@ public class BookManagerService extends Service {
     }
 
     private class ServiceWorker implements Runnable{
-
         @Override
         public void run() {
             while (!isBookManagerServiceDestroyed.get()){
@@ -92,7 +91,9 @@ public class BookManagerService extends Service {
                 bookList.add(newBook);
                 for (int i=0;i<newBookArrivedObservers.size();i++){
                     try {
-                        newBookArrivedObservers.get(i).onNewBookArrived(newBook);
+                        IOnNewBookArrivedListener iOnNewBookArrivedListener = newBookArrivedObservers.get(i);
+                        Log.d(TAG, "run: IOnNewBookArrivedListener="+iOnNewBookArrivedListener);
+                        iOnNewBookArrivedListener.onNewBookArrived(newBook);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
