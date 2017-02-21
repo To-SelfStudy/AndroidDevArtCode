@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BookManagerService extends Service {
     private static final String TAG = "BookManagerService";
     private CopyOnWriteArrayList<Book> bookList = new CopyOnWriteArrayList<>();
-    private CopyOnWriteArrayList<IOnNewBookArrivedListener> newBookArrivedObservers = new CopyOnWriteArrayList<>();
+    private RemoteCallbackList<IOnNewBookArrivedListener> newBookArrivedObservers = new RemoteCallbackList<>();
     private AtomicBoolean isBookManagerServiceDestroyed = new AtomicBoolean(false);
     private Binder binder = new IBookManager.Stub() {
         BookManagerService bookManagerService = BookManagerService.this;
@@ -35,22 +36,23 @@ public class BookManagerService extends Service {
 
         @Override
         public void registerOnBookArrivedListener(IOnNewBookArrivedListener iListener) throws RemoteException {
-            if (!newBookArrivedObservers.contains(iListener)) {
-                newBookArrivedObservers.add(iListener);
-                Log.d(TAG, "registerOnBookArrivedListener: success");
-            }else {
-                Log.d(TAG, "registerOnBookArrivedListener: already exist");
-            }
+            newBookArrivedObservers.register(iListener);
+            int N = newBookArrivedObservers.beginBroadcast();
+            newBookArrivedObservers.finishBroadcast();
+            Log.d(TAG, "registerOnBookArrivedListener:  current size="+N);
         }
 
         @Override
         public void unRegisterOnBookArrivedListener(IOnNewBookArrivedListener iListener) throws RemoteException {
-            if (newBookArrivedObservers.contains(iListener)) {
-                newBookArrivedObservers.remove(iListener);
+            boolean isSuccess = newBookArrivedObservers.unregister(iListener);
+            if(isSuccess) {
                 Log.d(TAG, "unRegisterOnBookArrivedListener: success");
             }else {
-                Log.d(TAG, "unRegisterOnBookArrivedListener: failure observer not find");
+                Log.d(TAG, "unRegisterOnBookArrivedListener: not found, can not unregister");
             }
+            final int N = newBookArrivedObservers.beginBroadcast();
+            newBookArrivedObservers.finishBroadcast();
+            Log.d(TAG, "unregisterListener, current size:" + N);
         }
     };
 
@@ -89,16 +91,24 @@ public class BookManagerService extends Service {
                 int newBookId = bookList.size() + 1;
                 Book newBook = new Book(newBookId-3, "newBook" + (newBookId - 3));
                 bookList.add(newBook);
-                for (int i=0;i<newBookArrivedObservers.size();i++){
-                    try {
-                        IOnNewBookArrivedListener iOnNewBookArrivedListener = newBookArrivedObservers.get(i);
-                        Log.d(TAG, "run: IOnNewBookArrivedListener="+iOnNewBookArrivedListener);
-                        iOnNewBookArrivedListener.onNewBookArrived(newBook);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
+                notifyObservers(newBook);
             }
         }
+    }
+
+    private void notifyObservers(Book newBook) {
+        int N = newBookArrivedObservers.beginBroadcast();
+        for (int i=0;i<N;i++){
+            try {
+                IOnNewBookArrivedListener iOnNewBookArrivedListener = newBookArrivedObservers.getBroadcastItem(i);
+                Log.d(TAG, "run: IOnNewBookArrivedListener="+iOnNewBookArrivedListener);
+                if(iOnNewBookArrivedListener!=null) {
+                    iOnNewBookArrivedListener.onNewBookArrived(newBook);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        newBookArrivedObservers.finishBroadcast();
     }
 }
