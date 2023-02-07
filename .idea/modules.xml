@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AndroidDevArtCode.iml" filepath="$PROJECT_DIR$/AndroidDevArtCode.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ipcdemo/ipcdemo.iml" filepath="$PROJECT_DIR$/ipcdemo/ipcdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AndroidDevArtCode.iml" filepath="$PROJECT_DIR$/.idea/modules/AndroidDevArtCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.iml" filepath="$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ipcdemo/AndroidDevArtCode.ipcdemo.unitTest.iml" />
     </modules>
   </component>
 </project>
